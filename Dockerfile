@@ -21,11 +21,13 @@ COPY frontend frontend
 
 # Install Python Packages
 RUN python3.11 -m pip install -r backend/requirements.txt
+# Editable install
+RUN python3.11 -m pip install -e .
 
 # Install Node Packages
 RUN cd frontend && npm install
 
 # Expose ports for FastAPI (8000) and Next.js (3000)
-EXPOSE 8000 3000
+EXPOSE 3000
 
-CMD ["sh", "-c", "cd backend && uvicorn main:app --host 0.0.0.0 --port 8000 & cd frontend && npm run dev"]
+CMD ["sh", "-c", "cd backend && fastapi run examples/chameleon/fastapi_ex.py & cd frontend && npm run dev"]
