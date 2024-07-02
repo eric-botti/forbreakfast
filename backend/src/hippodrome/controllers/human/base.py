@@ -10,14 +10,14 @@ from hippodrome.controllers import BaseController
 class BaseHumanController(BaseController):
     is_human: bool = Field(default=True, frozen=True)
 
-    def generate_formatted_response(
+    async def generate_formatted_response(
             self,
             output_format: Type[OutputFormatModel],
             additional_fields: dict = None,
             max_retries: int = 3
     ) -> OutputFormatModel | None:
         """For Human controllers, we can trust them enough to format their own responses... for now"""
-        response = self.generate_response()
+        response = await self.generate_response()
 
         if response:
             # only works because current outputs have only 1 field...

@@ -188,7 +188,7 @@ class ChameleonGame(Game):
         # Phase III: The Herd Votes for who they think the Chameleon is
         if self.game_state == "herd_vote":
             if not self.awaiting_input:
-                self.verbose_message("The Herd is voting...")
+                await self.verbose_message("The Herd is voting...")
             for current_player in self.players:
                 if current_player.role == "herd" and current_player.player_id not in [
                     vote["voter_id"] for vote in self.herd_vote_tally
@@ -247,7 +247,7 @@ class ChameleonGame(Game):
     async def player_turn_animal_description(self, player: Player):
         """Handles a player's turn to describe themselves."""
         if not self.awaiting_input:
-            self.verbose_message(
+            await self.verbose_message(
                 f"{player.name} is thinking...", recipient=player, exclude=True
             )
             # await self.game_message(fetch_prompt("player_describe_animal"), player)
@@ -256,7 +256,7 @@ class ChameleonGame(Game):
             # self.player_response(message)
 
         # Get Player Animal Description
-        response = player.controller.generate_formatted_response(
+        response = await player.controller.generate_formatted_response(
             AnimalDescriptionFormat
         )
 
@@ -279,7 +279,7 @@ class ChameleonGame(Game):
             await self.game_message(
                 "All players have spoken. The Chameleon will now guess the secret animal..."
             )
-            self.verbose_message(
+            await self.verbose_message(
                 "The Chameleon is guessing...", recipient=chameleon, exclude=True
             )
             player_responses = self.format_animal_descriptions(exclude=self.chameleon)
@@ -290,7 +290,7 @@ class ChameleonGame(Game):
                 self.chameleon,
             )
 
-        response = chameleon.controller.generate_formatted_response(
+        response = await chameleon.controller.generate_formatted_response(
             ChameleonGuessFormat
         )
 
@@ -317,7 +317,7 @@ class ChameleonGame(Game):
         additional_fields = {
             "player_names": [p.name for p in self.players if p != player]
         }
-        response = player.controller.generate_formatted_response(
+        response = await player.controller.generate_formatted_response(
             HerdVoteFormat, additional_fields=additional_fields
         )
 

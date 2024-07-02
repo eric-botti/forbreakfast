@@ -3,13 +3,13 @@ import json
 import logging
 import random
 
-import asyncio
+from markdown_it import MarkdownIt
 
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
 
 # Setup the Game
-from backend.examples.chameleon.chameleon_game import ChameleonGame
+from chameleon_game import ChameleonGame
 from hippodrome.controllers.human.base import BaseHumanController
 from hippodrome import Message
 
@@ -21,25 +21,37 @@ logger = logging.getLogger(__name__)
 
 
 app = FastAPI()
-
+md = MarkdownIt()
 
 @app.get("/")
-async def get():
+def get():
     """A simple UI for testing the chatbot."""
+    #
+    # with open("index.html") as f:
+    #     html = f.read()
 
-    with open("index.html") as f:
-        html = f.read()
+    html = "<h1>Chameleon Game</h1>"
 
     return HTMLResponse(html)
 
 
 class FastAPIHumanController(BaseHumanController):
-    websocket = None
+    # Set arbitrary_types_allowed=True to allow for the use of the WebSocket class
+    class Config:
+        arbitrary_types_allowed = True
+
+    websocket: WebSocket = None
 
     async def add_message(self, message: Message):
-        await self.websocket.send_json(
-            {"sender": message.sender, "content": message.content}
-        )
+        if message.type not in ["agent", "system"]:
+            html = md.render(message.content)
+            # Tailwind CSS classes for lists
+            html = html.replace("<ul>", "<ul class='list-disc list-inside space-y-1'>")
+            html = html.replace("<ol>", "<ol class='list-decimal list-inside space-y-1'>")
+
+            await self.websocket.send_json(
+                {"sender": message.sender, "content": html}
+            )
 
     async def _generate(self) -> str:
         player_message = await self.websocket.receive_json()
@@ -49,12 +61,15 @@ class FastAPIHumanController(BaseHumanController):
         return user_input
 
 
-def setup_game(player_name: str):
+def setup_game(player_name: str, websocket: WebSocket):
     """Set up the game."""
-
-    human_player = ChameleonPlayer(name=player_name, controller=FastAPIHumanController)
-
     game = ChameleonGame.from_human_name(player_name, FastAPIHumanController)
+
+    # This feels like cheating...
+    game.player_from_name(player_name).controller.websocket = websocket
+    # human_player_index = next(i for i, player in enumerate(game.players) if player.name == player_name)
+
+    # game.players[human_player_index] = human_player
 
     return game
 
@@ -62,25 +77,8 @@ def setup_game(player_name: str):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    logger.info("WebSocket connection established.")
 
-    while True:
-        player_message = await websocket.receive_json()
-        logger.info(f"Received data: {player_message}")
+    game = setup_game("Hugh", websocket)
 
-        user_input = player_message["message"]["content"]
-
-        if game is None:
-            game = ChameleonGame.from_human_name(user_input, FastAPIHumanController)
-            user_input = None
-
-        await game.run_game()
-
-        for message in game.messages[last_round_id : player_message.id]:
-            for recipient in message.recipients:
-                if "human" in recipient:
-                    await websocket.send_json(
-                        {"sender": message.sender, "content": message.content}
-                    )
-                    break
-
-        last_round_id = player_message.id
+    await game.run_game()

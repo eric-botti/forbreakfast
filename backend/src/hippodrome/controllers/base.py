@@ -31,51 +31,51 @@ class BaseController(BaseModel):
     def is_ai(self):
         return not self.is_human
 
-    def add_message(self, message: Message):
+    async def add_message(self, message: Message):
         """Adds a message to the message history, without generating a response."""
         self.messages.append(message)
 
     # Respond To methods - These take a message as input and generate a response
 
-    def respond_to(self, message: Message) -> Message:
+    async def respond_to(self, message: Message) -> Message:
         """Take a message as input and return a response. Both the message and the response are added to history."""
-        self.add_message(message)
+        await self.add_message(message)
         save(AgentMessage.from_message(message, [self.agent_id], self.game_id))
-        response = self.generate_response()
+        response = await self.generate_response()
         return response
 
-    def respond_to_formatted(
+    async def respond_to_formatted(
             self, message: Message,
             output_format: Type[OutputFormatModel],
             additional_fields: dict = None,
             **kwargs
     ) -> OutputFormatModel:
         """Responds to a message and logs the response."""
-        self.add_message(message)
-        output = self.generate_formatted_response(output_format, additional_fields, **kwargs)
+        await self.add_message(message)
+        output = await self.generate_formatted_response(output_format, additional_fields, **kwargs)
         return output
 
     # Generate response methods - These do not take a message as input and only use the current message history
 
-    def generate_response(self) -> Message | None:
+    async def generate_response(self) -> Message | None:
         """Generates a response based on the current messages in the history."""
-        content = self._generate()
+        content = await self._generate()
         if content:
             response = Message(sender=self.agent_id, type="agent", content=content)
-            self.add_message(response)
+            await self.add_message(response)
             save(AgentMessage.from_message(response, [self.agent_id], self.game_id))
             return response
         else:
             return None
 
-    def generate_formatted_response(
+    async def generate_formatted_response(
             self,
             output_format: Type[OutputFormatModel],
             additional_fields: dict = None,
             max_retries=3,
     ) -> OutputFormatModel:
         """Generates a response matching the provided format."""
-        initial_response = self.generate_response()
+        initial_response = await self.generate_response()
 
         reformat_message = Message(type="format", content=output_format.get_format_instructions())
 
@@ -84,7 +84,7 @@ class BaseController(BaseModel):
 
         while not output:
             try:
-                formatted_response = self.respond_to(reformat_message)
+                formatted_response = await self.respond_to(reformat_message)
 
                 fields = json.loads(formatted_response.content)
                 if additional_fields:
@@ -117,7 +117,7 @@ class BaseController(BaseModel):
 
         return output
 
-    def _generate(self) -> str:
+    async def _generate(self) -> str:
         """Generates a response from the Agent."""
         # This is the BaseAgent class, and thus has no response logic
         # Subclasses should implement this method to generate a response using the message history

@@ -14,21 +14,12 @@ export default function App() {
     setIsNameEntered(true);
   };
 
-
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "Game Master",
-      content: "Welcome " + name + "! I am the Game Master. I will be guiding you through this adventure. Are you ready to begin?",
-    }
-  ]);
-
   return (
     <div>
       {!isNameEntered ? (
         <Welcome onNameSubmit={handleNameSubmit} />
       ) : (
-        <ChatWindow messages={messages} setMessages={setMessages} />
+        <ChatWindow name={ name }/>
       )}
     </div>
   );

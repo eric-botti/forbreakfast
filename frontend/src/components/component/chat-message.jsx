@@ -26,7 +26,7 @@ export default function ChatMessage({ message }) {
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">{message.sender}</span>
             </div>
-            <p className="text-sm">{message.content}</p>
+            <div className="text-sm" dangerouslySetInnerHTML={{ __html: message.content }}></div>
           </div>
         </>
       )}

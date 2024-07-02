@@ -6,12 +6,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import ChatMessage from "@/components/component/chat-message";
+import HowToPlay from "@/components/component/how-to-play";
 import { useWebSocketChat} from "@/components/component/WebSocket";
 
-export default function ChatWindow({ messages, setMessages }) {
+export default function ChatWindow({ name }) {
+  const [messages, setMessages] = useState([]);
+
   const [newMessage, setNewMessage] = useState("");
 
   const { sendMessage, onMessageReceived } = useWebSocketChat('ws://127.0.0.1:8000/ws');
+
+
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
@@ -37,9 +42,13 @@ export default function ChatWindow({ messages, setMessages }) {
 
 
   return (
-<div className="h-screen lg:py-20">
-  <div className="flex flex-col h-full lg:max-w-screen-md mx-auto my-50 bg-background rounded-lg shadow-lg">
-    <h1 className="text-3xl font-bold text-center mt-10">for breakfast</h1>
+<div className="h-screen">
+  <div className="flex flex-col h-full lg:max-w-screen-lg mx-auto my-50 bg-background">
+    <div className="flex justify-end px-3 pt-3">
+      <HowToPlay className="relative" />
+    </div>
+    <h1 className="text-3xl font-bold text-center pb-3">Chameleon</h1>
+
     <div className="flex-1 overflow-auto p-4">
       <ScrollArea className="h-full px-5">
         <div className="grid gap-4">
@@ -61,7 +70,7 @@ export default function ChatWindow({ messages, setMessages }) {
           }
         }}
         onChange={(e) => setNewMessage(e.target.value)}
-        className="min-h-[48px] rounded-2xl resize-none p-4 border border-neutral-400 shadow-sm pr-16"
+        className="min-h-4 rounded-2xl resize-none border border-neutral-400 shadow-sm"
       />
         <Button
           type="button"
@@ -69,7 +78,7 @@ export default function ChatWindow({ messages, setMessages }) {
           className="absolute w-8 h-8 top-3 right-3"
           onClick={handleSendMessage}
         >
-          <ArrowUpIcon className="w-4 h-4" />
+          <SendIcon className="w-4 h-4" />
           <span className="sr-only">Send</span>
         </Button>
       </div>
@@ -80,7 +89,7 @@ export default function ChatWindow({ messages, setMessages }) {
   );
 }
 
-function ArrowUpIcon(props) {
+function SendIcon(props) {
   return (
     <svg
       {...props}
@@ -94,8 +103,8 @@ function ArrowUpIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="m5 12 7-7 7 7" />
-      <path d="M12 19V5" />
+      <path d="m22 2-7 20-4-9-9-4Z" />
+      <path d="M22 2 11 13" />
     </svg>
-  );
+  )
 }

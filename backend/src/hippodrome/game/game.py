@@ -71,7 +71,7 @@ class Game(BaseModel):
         ) = None,  # If None, message is broadcast to all players
         exclude: bool = False,  # If True, the message is broadcast to all players except the chosen player
         message_type: MessageType = "info",
-        sender: str = "game",
+        sender: str = "Game Master",
     ):
         """
         Sends a message to a player or all players.
@@ -95,7 +95,7 @@ class Game(BaseModel):
 
         for player in recipients:
             if player.can_receive_message(message_type):
-                player.controller.add_message(message)
+                await player.controller.add_message(message)
                 recipient_ids.append(player.player_id)
 
         agent_message = AgentMessage.from_message(message, recipient_ids, self.game_id)
@@ -109,7 +109,8 @@ class Game(BaseModel):
 
         Ex: "Abby is thinking..."
         """
-        self.game_message(content, **kwargs, message_type="verbose")
+        # await self.game_message(content, **kwargs, message_type="verbose")
+        pass
 
     async def debug_message(self, content: str, **kwargs):
         """

@@ -15,7 +15,7 @@ class OpenAIController(BaseController):
     client: Any = Field(default_factory=OpenAI, exclude=True)
     """The OpenAI client used to generate responses."""
 
-    def _generate(self) -> str:
+    async def _generate(self) -> str:
         """Generates a response using the message history"""
         messages = []
         for message in self.messages:

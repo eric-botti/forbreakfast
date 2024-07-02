@@ -22,7 +22,7 @@ class AnthropicController(BaseController):
 
         super().__init__()
 
-    def _generate(self) -> str:
+    async def _generate(self) -> str:
         """Generates a response using the message history"""
         messages = [message.to_compatible() for message in self.messages]
 
