@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import App from "@/components/component/app";
 
 export const metadata: Metadata = {
-  title: 'AI for Breakfast'
+  title: 'for breakfast'
 };
 
 export default function Home() {

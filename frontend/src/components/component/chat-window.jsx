@@ -14,7 +14,7 @@ export default function ChatWindow({ name }) {
 
   const [newMessage, setNewMessage] = useState("");
 
-  const { sendMessage, onMessageReceived } = useWebSocketChat('ws://127.0.0.1:8000/ws');
+  const { sendMessage, onMessageReceived } = useWebSocketChat();
 
 
 

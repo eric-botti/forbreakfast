@@ -1,4 +1,4 @@
-from backend.examples.chameleon.chameleon_game import ChameleonGame
+from backend.chameleon.chameleon_game import ChameleonGame
 import asyncio
 
 

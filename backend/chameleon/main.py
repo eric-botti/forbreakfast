@@ -22,18 +22,18 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 md = MarkdownIt()
-
-@app.get("/")
-def get():
-    """A simple UI for testing the chatbot."""
-    #
-    # with open("index.html") as f:
-    #     html = f.read()
-
-    html = "<h1>Chameleon Game</h1>"
-
-    return HTMLResponse(html)
-
+#
+# @app.get("/")
+# def get():
+#     """A simple UI for testing the chatbot."""
+#     #
+#     # with open("index.html") as f:
+#     #     html = f.read()
+#
+#     html = "<h1>Chameleon Game</h1>"
+#
+#     return HTMLResponse(html)
+#
 
 class FastAPIHumanController(BaseHumanController):
     # Set arbitrary_types_allowed=True to allow for the use of the WebSocket class
@@ -74,7 +74,7 @@ def setup_game(player_name: str, websocket: WebSocket):
     return game
 
 
-@app.websocket("/ws")
+@app.websocket("/api/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     logger.info("WebSocket connection established.")
