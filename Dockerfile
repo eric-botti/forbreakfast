@@ -14,9 +14,4 @@ RUN cd backend && pip install -r requirements.txt && pip install -e .
 # Install Node Packages
 RUN cd frontend && npm install
 
-# Copy entrypoint.sh
-
-EXPOSE 443
-EXPOSE 444
-
 ENTRYPOINT ["sh", "entrypoint.sh"]

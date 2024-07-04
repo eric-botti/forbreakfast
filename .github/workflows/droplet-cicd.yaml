@@ -69,5 +69,5 @@ jobs:
             --env OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
             --env NEXT_PUBLIC_API_HOST=${{ secrets.HOST }} \
             -p 5230:5230 \
-            -p 5231:5231 \
+            -p 80:80 \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
