@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 export function useWebSocketChat() {
   const ws = useRef(null);
-  const url = 'ws://127.0.0.1:5230/api/ws'
+  const url = 'ws://localhost:5230/api/ws'
 
   useEffect(() => {
     // Initialize WebSocket connection

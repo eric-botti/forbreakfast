@@ -1,5 +1,5 @@
 import asyncio
-import json
+import os
 import logging
 import random
 
@@ -13,7 +13,8 @@ from chameleon_game import ChameleonGame
 from hippodrome.controllers.human.base import BaseHumanController
 from hippodrome import Message
 
-from chameleon_player import ChameleonPlayer
+
+import openai
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -22,18 +23,32 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 md = MarkdownIt()
-#
-# @app.get("/")
-# def get():
-#     """A simple UI for testing the chatbot."""
-#     #
-#     # with open("index.html") as f:
-#     #     html = f.read()
-#
-#     html = "<h1>Chameleon Game</h1>"
-#
-#     return HTMLResponse(html)
-#
+
+@app.get("/")
+def get():
+    """A simple UI for testing the chatbot."""
+    html_path = os.path.join("backend", "chameleon", "index.html")
+
+    with open(html_path) as f:
+        html = f.read()
+
+    return HTMLResponse(html)
+
+@app.get("/openai_test/")
+def openai_test():
+    """Test call to OpenAI API."""
+    client = openai.Client()
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "What is the meaning of life?"},
+        ],
+    )
+
+    return response.json()
+
 
 class FastAPIHumanController(BaseHumanController):
     # Set arbitrary_types_allowed=True to allow for the use of the WebSocket class
