@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --destructive-foreground: 0 100% 98%;
+    --secondary-foreground: 197 100% 12%;
+    --popover-foreground: 197 100% 12%;
+    --primary-foreground: 197 0% 100%;
+    --accent-foreground: 197 100% 12%;
+    --muted-foreground: 197 100% 12%;
+    --card-foreground: 197 100% 12%;
+    --destructive: 0 75% 49%;
+    --background: 197 100% 95%;
+    --foreground: 197 100% 12%;
+    --secondary: 197 100% 60%;
+    --popover: 197 100% 90%;
+    --primary: 197 100% 34%;
+    --border: 197 100% 80%;
+    --accent: 197 100% 70%;
+    --muted: 197 100% 85%;
+    --input: 197 100% 45%;
+    --card: 197 100% 98%;
+    --ring: 197 100% 45%;
+    --radius: 1rem;
+    --waffle-size: 35rem
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+
+body {
+    background-color: #add8e6; /* Light blue background */
+    background-image: url('waffle_pattern.svg'); /* Path to your waffle SVG */
+    background-repeat: repeat;
+    background-size: var(--waffle-size); /* Adjust the size as needed */
+    animation: moveBackground 20s infinite linear;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 var(--waffle-size); /* Adjust to control the speed and direction */
+    }
+}
