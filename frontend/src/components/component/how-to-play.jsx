@@ -4,9 +4,10 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 "use client";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogTrigger, DialogContent} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import {createRoot} from 'react-dom/client'
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import React, {useState} from "react";
 
 
@@ -22,8 +23,8 @@ export default function HowToPlay() {
           <span className="sr-only">Help</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <div className="flex flex-col items-center justify-center gap-4 py-4">
+      <DialogContent className="sm:max-w-[600px] max-h-full overflow-auto">
+          <div className="flex flex-col items-center justify-center gap-4 py-4">
           <h2 className="text-2xl font-bold">How to Play</h2>
           <div className="space-y-4">
             <div className="text-sm space-y-2">
@@ -59,12 +60,7 @@ export default function HowToPlay() {
             </div>
           </div>
             <Button onClick={() => setOpen(false)}>Let's Do This</Button>
-          <div className="flex justify-center items-center space-x-2 text-sm mt-2">
-            <p>Click on the</p>
-            <CircleHelpIcon className="h-5 w-5"/>
-            <p>icon to view these rules again at any time</p>
           </div>
-        </div>
       </DialogContent>
     </Dialog>
   )
