@@ -8,18 +8,33 @@ import { Dialog, DialogTrigger, DialogContent} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 
 
 export default function HowToPlay() {
   const [open, setOpen] = useState(true);
 
+  useEffect(() => {
+    const handleEnterPress = (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+      }
+    };
+
+    // Clear any lingering Enter key events when the component mounts
+    window.addEventListener('keydown', handleEnterPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleEnterPress);
+    };
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
-          <CircleHelpIcon className="h-6 w-6" />
+          <CircleHelpIcon className="h-6 w-6"/>
           <span className="sr-only">Help</span>
         </Button>
       </DialogTrigger>
