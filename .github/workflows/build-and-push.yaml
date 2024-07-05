@@ -1,0 +1,65 @@
+name: Build and Deploy to DigitalOcean Droplet
+
+# 1
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the main branch
+  push:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+#2
+env:
+  REGISTRY: "registry.digitalocean.com/forbreakfast"
+  FRONTEND_IMAGE_NAME: "frontend"
+  BACKEND_IMAGE_NAME: "backend"
+
+#3
+jobs:
+  build_and_push_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Move to Frontend Directory
+        run: cd frontend
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push Docker images
+        run: docker buildx build --push --tag $(echo $REGISTRY)/$(echo FRONTEND_IMAGE_NAME):latest .
+
+  build_and_push_backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Move to Bakend Directory
+        run: cd backend
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push Docker images
+        run: docker buildx build --push --tag $(echo $REGISTRY)/$(echo BACKEND_IMAGE_NAME):latest .

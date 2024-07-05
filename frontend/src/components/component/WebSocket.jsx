@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 
 export function useWebSocketChat(playerName) {
   const ws = useRef(null);
-  const host = process.env.NEXT_PUBLIC_API_HOST || 'localhost';
-  const url = `ws://${host}:5230/ws/${playerName}`;
+  const host = process.env.NEXT_PUBLIC_API_HOST || 'localhost:5230';
+  const url = `ws://${host}/api/ws/${playerName}`;
 
   useEffect(() => {
     // Initialize WebSocket connection
