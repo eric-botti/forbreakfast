@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: |
-            ./docker-compose.yml
+            ./docker-compose.yaml
             ./nginx.conf
           target: ./deployment
 
