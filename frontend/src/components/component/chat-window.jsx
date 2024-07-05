@@ -14,7 +14,7 @@ export default function ChatWindow({ name }) {
 
   const [newMessage, setNewMessage] = useState("");
 
-  const { sendMessage, onMessageReceived } = useWebSocketChat();
+  const { sendMessage, onMessageReceived } = useWebSocketChat(name);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {

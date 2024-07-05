@@ -64,8 +64,46 @@ function generateRandomName() {
     return names[randomIndex]
 }
 
+const disallowedCharacters = [
+    ' ',    // Space
+    '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F',
+    '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\x1E', '\x1F',
+    '\x7F', // Control characters
+    ':',    // Colon
+    '/',    // Forward slash
+    '?',    // Question mark
+    '#',    // Hash
+    '[',    // Left square bracket
+    ']',    // Right square bracket
+    '@',    // At sign
+    '!',    // Exclamation mark
+    '$',    // Dollar sign
+    '&',    // Ampersand
+    "'",    // Single quote
+    '(',    // Left parenthesis
+    ')',    // Right parenthesis
+    '*',    // Asterisk
+    '+',    // Plus
+    ',',    // Comma
+    ';',    // Semicolon
+    '=',    // Equals sign
+    '<',    // Less than
+    '>',    // Greater than
+    '"',    // Double quote
+    '{',    // Left curly brace
+    '}',    // Right curly brace
+    '|',    // Vertical bar or pipe
+    '\\',   // Backslash
+    '^',    // Caret
+    '`',    // Grave accent
+    '%',    // Percent sign (except when used for encoding)
+];
+
+
 export const Welcome = ({ onNameSubmit }) => {
   const [name, setName] = useState("")
+    const [error, setError] = useState('');
+
   const handleRandomName = () => {
     const randomName = generateRandomName()
     setName(randomName)
@@ -83,6 +121,17 @@ export const Welcome = ({ onNameSubmit }) => {
     }
   };
 
+  const handleNameChange = (e) => {
+    // Check if the has any of the disallowed characters
+    if (disallowedCharacters.some((char) => e.target.value.includes(char))) {
+      setError('Sorry, that character is not allowed in your name.');
+      return;
+    }
+    setError('')
+    setName(e.target.value);
+  }
+
+
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="bg-background p-8 md:px-32 rounded-lg shadow-lg md:max-w-xl lg:max-w-3xl space-y-4 text-center">
@@ -94,13 +143,14 @@ export const Welcome = ({ onNameSubmit }) => {
 
         <h2 className="text-xl font-bold">Enter your name to begin</h2>
         <div className="space-y-4 md:w-4/5 mx-auto">
+            {error && <p className="text-destructive">{error}</p>}
             <div className="flex items-center">
               <Input
                 id="name"
                 placeholder="Enter your name"
                 className="w-full text-base"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={handleNameChange}
                 onKeyDown={handleKeyDown}
               />
                 <TooltipProvider>

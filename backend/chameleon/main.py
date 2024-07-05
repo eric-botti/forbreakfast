@@ -2,15 +2,18 @@ import asyncio
 import os
 import logging
 import random
+from contextlib import asynccontextmanager
+from typing import Dict
 
-from markdown_it import MarkdownIt
 
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel, Field
+from starlette.websockets import WebSocketDisconnect
 
 # Setup the Game
 from chameleon_game import ChameleonGame
-from hippodrome.controllers.human.base import BaseHumanController
+from hippodrome.controllers.human.fastapi import FastAPIHumanController
 from hippodrome import Message
 
 
@@ -20,80 +23,87 @@ import openai
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+games = {}
 
-app = FastAPI()
-md = MarkdownIt()
-
-@app.get("/")
-def get():
-    """A simple UI for testing the chatbot."""
-    html_path = os.path.join("backend", "chameleon", "index.html")
-
-    with open(html_path) as f:
-        html = f.read()
-
-    return HTMLResponse(html)
-
-@app.get("/openai_test/")
-def openai_test():
-    """Test call to OpenAI API."""
-    client = openai.Client()
-
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": "What is the meaning of life?"},
-        ],
-    )
-
-    return response.json()
+async def cleanup_games():
+    while True:
+        await asyncio.sleep(900)  # Run every 15 minutes
+        for game_id, game in list(games.items()):
+            if game["state"] == "disconnected":
+                del games[game_id]
+                logger.info(f"Cleaned up disconnected game: {game_id}")
 
 
-class FastAPIHumanController(BaseHumanController):
-    # Set arbitrary_types_allowed=True to allow for the use of the WebSocket class
-    class Config:
-        arbitrary_types_allowed = True
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    cleanup_task = asyncio.create_task(cleanup_games())
+    logger.info("Background cleanup task started")
 
-    websocket: WebSocket = None
-
-    async def add_message(self, message: Message):
-        if message.type not in ["agent", "system"]:
-            html = md.render(message.content)
-            # Tailwind CSS classes for lists
-            html = html.replace("<ul>", "<ul class='list-disc list-inside space-y-1'>")
-            html = html.replace("<ol>", "<ol class='list-decimal list-inside space-y-1'>")
-
-            await self.websocket.send_json(
-                {"sender": message.sender, "content": html}
-            )
-
-    async def _generate(self) -> str:
-        player_message = await self.websocket.receive_json()
-        logger.info(f"Received data: {player_message}")
-
-        user_input = player_message["message"]["content"]
-        return user_input
+    yield
+    # Shutdown: cancel background task
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        logger.info("Background cleanup task cancelled")
 
 
-def setup_game(player_name: str, websocket: WebSocket):
-    """Set up the game."""
+app = FastAPI(lifespan=lifespan)
+
+
+class PlayerName(BaseModel):
+    player_name: str = Field(..., min_length=1, max_length=50)
+
+
+@app.post("/game/create", response_model=Dict[str, str])
+async def create_game(name: PlayerName):
+    """Create a new game."""
+    game = ChameleonGame.from_human_name(name.player_name, FastAPIHumanController)
+
+    game_id = game.game_id
+
+    games[game_id] = {
+        "game": game,
+        "state": "created",
+        "human": name.player_name
+    }
+
+    return {"game_id": game_id}
+
+
+@app.websocket("/ws/{player_name}")
+async def websocket_endpoint(websocket: WebSocket, player_name: str):
+    await websocket.accept()
+    logger.info(f"WebSocket connection established for {player_name}")
+
+    # Create the game
     game = ChameleonGame.from_human_name(player_name, FastAPIHumanController)
 
-    # This feels like cheating...
+    # Set the websocket for the human player
     game.player_from_name(player_name).controller.websocket = websocket
-    # human_player_index = next(i for i, player in enumerate(game.players) if player.name == player_name)
 
-    # game.players[human_player_index] = human_player
+    try:
+        await game.run_game()
+    except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected for player: {player_name}")
 
-    return game
 
-
-@app.websocket("/api/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    logger.info("WebSocket connection established.")
-
-    game = setup_game("Hugh", websocket)
-
-    await game.run_game()
+#
+# @app.websocket("/ws/{game_id}")
+# async def websocket_endpoint(websocket: WebSocket, game_id: str):
+#     await websocket.accept()
+#     logger.info(f"WebSocket connection established for {game_id}")
+#
+#     game: ChameleonGame = games[game_id]["game"]
+#     games[game_id]["state"] = "connected"
+#
+#     # Set the websocket for the human player
+#     game.player_from_name(games[game_id]["human"]).controller.websocket = websocket
+#
+#     try:
+#         await game.run()
+#
+#     except WebSocketDisconnect:
+#         logger.info(f"WebSocket disconnected for game: {game_id}")
+#     finally:
+#         games[game_id]["state"] = "disconnected"
