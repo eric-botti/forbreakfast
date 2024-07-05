@@ -12,7 +12,7 @@ export default function ChatMessage({ message }) {
             message.sender === "You" ? "bg-primary text-primary-foreground" : ""
           }`}
         >
-          <p className="text-sm">{message.content}</p>
+          <p className="text-base">{message.content}</p>
         </div>
       ) : (
         <>
@@ -24,9 +24,9 @@ export default function ChatMessage({ message }) {
             className="bg-muted rounded-lg p-3 max-w-[70%]"
           >
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium">{message.sender}</span>
+              <span className="font-semibold">{message.sender}</span>
             </div>
-            <div className="text-sm" dangerouslySetInnerHTML={{ __html: message.content }}></div>
+            <div className="text-base" dangerouslySetInnerHTML={{ __html: message.content }}></div>
           </div>
         </>
       )}

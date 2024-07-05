@@ -98,7 +98,7 @@ export const Welcome = ({ onNameSubmit }) => {
               <Input
                 id="name"
                 placeholder="Enter your name"
-                className="w-full"
+                className="w-full text-base"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={handleKeyDown}

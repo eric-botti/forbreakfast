@@ -68,7 +68,7 @@ export default function ChatWindow({ name }) {
           }
         }}
         onChange={(e) => setNewMessage(e.target.value)}
-        className="min-h-4 resize-none border border-neutral-400 shadow-sm"
+        className="min-h-4 resize-none border border-neutral-400 shadow-sm text-base"
       />
         <Button
           type="button"
