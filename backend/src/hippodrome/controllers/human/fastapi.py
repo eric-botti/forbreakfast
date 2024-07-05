@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import WebSocket
 from hippodrome.controllers.human.base import BaseHumanController
 from hippodrome import Message
@@ -5,6 +7,11 @@ from hippodrome import Message
 from markdown_it import MarkdownIt
 
 md = MarkdownIt()
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class FastAPIHumanController(BaseHumanController):
     # Set arbitrary_types_allowed=True to allow for the use of the WebSocket class
