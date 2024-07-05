@@ -58,7 +58,7 @@ jobs:
             docker rm $(docker ps -a -q) || true
 
             # Login to registry
-            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password-stdin ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Pull the latest image
             docker pull registry.digitalocean.com/forbreakfast/forbreakfast:latest
 

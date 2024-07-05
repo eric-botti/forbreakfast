@@ -5,7 +5,7 @@ services:
     image: registry.digitalocean.com/forbreakfast/forbreakfast:latest
     container_name: web # Name of the container for the web service.
     ports:
-      - "80:80" # Maps port 80 on the host to port 80 on the container.
+      - "5231:5231" # Maps port 80 on the host to port 80 on the container.
       - "5230:5230"
     networks:
       - webnet # Specifies that this service is connected to the 'webnet' network.
