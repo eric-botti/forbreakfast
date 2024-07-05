@@ -45,6 +45,9 @@ jobs:
     needs: build_and_push
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Copy deployment files to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -54,7 +57,7 @@ jobs:
           source: |
             ./docker-compose.yml
             ./nginx.conf
-          target: .
+          target: ./deployment
 
   deploy:
     runs-on: ubuntu-latest
