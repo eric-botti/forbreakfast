@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: set-up-config
+    needs: deliver_deployment_files
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
