@@ -113,4 +113,5 @@ jobs:
             # Clean Up .env
             rm .env
             
-            
+            # Clean up Old Containers
+            docker container prune
