@@ -1,16 +1,12 @@
 aiforbreakfast.com {
-    reverse_proxy /api/ws backend:5230 {
-        header_up Host {host}
-        header_up X-Real-IP {remote}
-        header_up X-Forwarded-For {remote}
-        header_up X-Forwarded-Proto {scheme}
-    }
+    @websockets {
+		header Connection *Upgrade*
+		header Upgrade    websocket
+	}
 
-    reverse_proxy /api/* backend:5230 {
-        transport http {
-            versions h1c h2c
-        }
-    }
+	reverse_proxy @websockets backend:5230
+    reverse_proxy /api/* backend:5230
+
     reverse_proxy /* frontend:5231
 }
 

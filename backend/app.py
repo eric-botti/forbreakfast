@@ -45,6 +45,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+@app.get("/api/healthcheck")
+def health_check():
+    logger.info("Successful Healthcheck")
+    return {"status": "OK"}
+
 
 class PlayerName(BaseModel):
     player_name: str = Field(..., min_length=1, max_length=50)
