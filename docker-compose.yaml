@@ -1,5 +1,8 @@
 version: '3.7'
 
+networks:
+  caddy:
+
 services:
   frontend:
     image: registry.digitalocean.com/forbreakfast/frontend:latest
@@ -7,20 +10,20 @@ services:
     restart: always
     ports:
       - "5231:5231" # Expose the frontend port
-    environment:
-      - NODE_ENV=production
+    networks:
+      - caddy
 
   backend:
     image: registry.digitalocean.com/forbreakfast/backend:latest
     container_name: backend
     restart: always
-    environment:
-      - APP_ENV=production
+    networks:
+      - caddy
 
   caddy:
     image: caddy:latest
     container_name: caddy
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -28,6 +31,8 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - caddy
 
 volumes:
   caddy_data:
