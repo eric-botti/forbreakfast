@@ -78,6 +78,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [ build_backend, build_frontend]
+    if: always()
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
