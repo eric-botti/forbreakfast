@@ -1,6 +1,6 @@
 /venv/
 /experiments/
-/test/
+/backend/test/
 /.idea/
 **/__pycache__/
 /data/
