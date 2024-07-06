@@ -5,19 +5,14 @@ import random
 from contextlib import asynccontextmanager
 from typing import Dict
 
-
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
 from starlette.websockets import WebSocketDisconnect
 
-# Setup the Game
+from pydantic import BaseModel, Field
+
+
 from chameleon.chameleon_game import ChameleonGame
 from hippodrome.controllers.human.fastapi import FastAPIHumanController
-from hippodrome import Message
-
-
-import openai
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
