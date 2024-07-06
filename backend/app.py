@@ -14,13 +14,11 @@ from pydantic import BaseModel, Field
 from chameleon.chameleon_game import ChameleonGame
 from hippodrome.controllers.human.fastapi import FastAPIHumanController
 
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 games = {}
-
 
 async def cleanup_games():
     while True:
