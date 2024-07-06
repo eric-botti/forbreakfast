@@ -107,12 +107,8 @@ jobs:
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
             
-            # Stop and remove all current containers
-            docker-compose down
-            docker volume prune -f
-
             # Run new containers from docker-compose
-            docker-compose --env-file .env up -d
+            docker-compose --env-file .env up -d --build
             
             # Clean Up .env
             rm .env
