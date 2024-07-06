@@ -4,19 +4,23 @@ networks:
   caddy:
 
 services:
+  backend:
+    image: registry.digitalocean.com/forbreakfast/backend:latest
+    container_name: backend
+    restart: always
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "5230:5230" # Expose the backend port
+    networks:
+      - caddy
+
   frontend:
     image: registry.digitalocean.com/forbreakfast/frontend:latest
     container_name: frontend
     restart: always
     ports:
       - "5231:5231" # Expose the frontend port
-    networks:
-      - caddy
-
-  backend:
-    image: registry.digitalocean.com/forbreakfast/backend:latest
-    container_name: backend
-    restart: always
     networks:
       - caddy
 

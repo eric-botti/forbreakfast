@@ -34,10 +34,8 @@ jobs:
         filters: |
           frontend:
             - 'frontend/**'
-            - '.github/workflows/deploy-to-droplet.yaml'
           backend:
             - 'backend/**'
-            - '.github/workflows/deploy-to-droplet.yaml'
 
   build_frontend:
     runs-on: ubuntu-latest
@@ -88,7 +86,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          envs: IMAGE_NAME,REGISTRY, {{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}, {{ secrets.OPENAI_API_KEY }}
           script: |
             # Go into the directory
             cd forbreakfast
@@ -98,8 +95,7 @@ jobs:
             doctl registry login --expiry-seconds 720
             
             # Pull the latest images
-            docker pull registry.digitalocean.com/forbreakfast/frontend:latest
-            docker pull registry.digitalocean.com/forbreakfast/backend:latest
+            docker-compose pull
 
             # Get the latest changes
             git pull
@@ -109,4 +105,6 @@ jobs:
             docker volume prune -f
 
             # Run new containers from docker-compose
-            docker-compose up -d
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} docker-compose up -d
+            
+            

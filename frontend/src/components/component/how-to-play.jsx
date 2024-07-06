@@ -50,9 +50,9 @@ export default function HowToPlay() {
                 </p>
               <h3 className="text-lg font-medium">Rules</h3>
               <p>
-                During a round each player gets a turn to describe themselves using an "I"-statement as if they were the animal.
+                During a round each player gets a turn to describe themselves using an &ldquo;I&ldquo;-statement as if they were the animal.
                 The Chameleon must blend in by providing details about the animal using context from other players.
-                The rest of the players, the Herd, must be careful not to give away too much information with their responses so that the Chameleon can't deduce the animal.
+                The rest of the players, the Herd, must be careful not to give away too much information with their responses so that the Chameleon can&lsquo;t deduce the animal.
               </p>
               <p>After all players have spoken, two thing will happen:</p>
               <ol className="list-decimal list-inside">
@@ -74,7 +74,7 @@ export default function HowToPlay() {
               <p>A player can earn up to 2 points per round</p>
             </div>
           </div>
-            <Button onClick={() => setOpen(false)}>Let's Do This</Button>
+            <Button onClick={() => setOpen(false)}>Let&lsquo;s Do This</Button>
           </div>
       </DialogContent>
     </Dialog>

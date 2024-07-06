@@ -1,11 +1,12 @@
-aiforbreakfast.com, www.aiforbreakfast.com {
-  reverse_proxy /api/* backend:5230
-  reverse_proxy /docs/* backend:5230
-  reverse_proxy /* frontend:5231
+aiforbreakfast.com {
+    reverse_proxy /api/* backend:5230 {
+        transport http {
+            versions h1c h2c
+        }
+    }
+    reverse_proxy /* frontend:5231
 }
 
-localhost {
-  reverse_proxy /api/* backend:5230
-  reverse_proxy /docs/* backend:5230
-  reverse_proxy /* frontend:5231
+www.aiforbreakfast.com {
+    redir https://aiforbreakfast.com{uri} permanent
 }
