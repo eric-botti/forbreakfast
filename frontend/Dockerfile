@@ -63,6 +63,7 @@ USER nextjs
 EXPOSE 5231
 
 ENV PORT 5231
+ENV NEXT_PUBLIC_API_HOST aiforbreakfast.com
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

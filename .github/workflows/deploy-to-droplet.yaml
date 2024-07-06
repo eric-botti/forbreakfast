@@ -96,16 +96,25 @@ jobs:
             doctl registry login --expiry-seconds 720
             
             # Pull the latest images
-            docker-compose pull
+            docker pull registry.digitalocean.com/forbreakfast/frontend:latest
+            docker pull registry.digitalocean.com/forbreakfast/backend:latest
 
             # Get the latest changes
             git pull
+            
+            # Set Up Env File
+            cat <<EOF > .env
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            EOF
             
             # Stop and remove all current containers
             docker-compose down
             docker volume prune -f
 
             # Run new containers from docker-compose
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} docker-compose up -d
+            docker-compose --env-file .env up -d
+            
+            # Clean Up .env
+            rm .env
             
             
