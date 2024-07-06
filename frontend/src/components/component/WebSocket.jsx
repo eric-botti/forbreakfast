@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function useWebSocketChat(playerName, host) {
+export function useWebSocketChat(playerName) {
   const ws = useRef(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function useWebSocketChat(playerName, host) {
         ws.current.close();
       }
     };
-  }, [url]);
+  }, []);
 
   const sendMessage = (message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {

@@ -9,7 +9,7 @@ import ChatMessage from "@/components/component/chat-message";
 import HowToPlay from "@/components/component/how-to-play";
 import { useWebSocketChat} from "@/components/component/WebSocket";
 
-export default function ChatWindow({ name, host }) {
+export default function ChatWindow({ name }) {
   const [messages, setMessages] = useState([]);
 
   const [newMessage, setNewMessage] = useState("");
