@@ -50,6 +50,9 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           envs: IMAGE_NAME,REGISTRY, {{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}, {{ secrets.OPENAI_API_KEY }}
           script: |
+            # Go into the directory
+            cd forbreakfast
+            
             # Login to Registry Using doctl
             doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             doctl registry login --expiry-seconds 720
@@ -58,15 +61,12 @@ jobs:
             docker pull registry.digitalocean.com/forbreakfast/frontend:latest
             docker pull registry.digitalocean.com/forbreakfast/backend:latest
 
-            # Stop and remove all current containers
-            docker stop $(docker ps -q) || true
-            docker rm $(docker ps -a -q) || true
-
-            # Go into the directory
-            cd forbreakfast
-
             # Get the latest changes
             git pull
+            
+            # Stop and remove all current containers
+            docker-compose down
+            docker volume prune -f
 
             # Run new containers from docker-compose
             docker-compose up -d
