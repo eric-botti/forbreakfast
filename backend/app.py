@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from starlette.websockets import WebSocketDisconnect
 
 # Setup the Game
-from chameleon_game import ChameleonGame
+from chameleon.chameleon_game import ChameleonGame
 from hippodrome.controllers.human.fastapi import FastAPIHumanController
 from hippodrome import Message
 
@@ -55,7 +55,7 @@ class PlayerName(BaseModel):
     player_name: str = Field(..., min_length=1, max_length=50)
 
 
-@app.post("/game/create", response_model=Dict[str, str])
+@app.post("/api/game/create", response_model=Dict[str, str])
 async def create_game(name: PlayerName):
     """Create a new game."""
     game = ChameleonGame.from_human_name(name.player_name, FastAPIHumanController)
@@ -71,7 +71,7 @@ async def create_game(name: PlayerName):
     return {"game_id": game_id}
 
 
-@app.websocket("/ws/{player_name}")
+@app.websocket("/api/ws/{player_name}")
 async def websocket_endpoint(websocket: WebSocket, player_name: str):
     await websocket.accept()
     logger.info(f"WebSocket connection established for {player_name}")

@@ -3,14 +3,13 @@ import random
 from typing import ClassVar, List, Type
 
 from hippodrome.game.utils import random_index
-from chameleon_player import ChameleonPlayer
-from chameleon_data_models import (
+from chameleon.chameleon_player import ChameleonPlayer
+from chameleon.chameleon_data_models import (
     AnimalDescriptionFormat,
     ChameleonGuessFormat,
     HerdVoteFormat,
 )
-
-from prompts import fetch_prompt, format_prompt
+from chameleon.prompts import fetch_prompt, format_prompt
 
 from hippodrome import Game, Player, Message
 

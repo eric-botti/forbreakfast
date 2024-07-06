@@ -1,6 +1,6 @@
 name: Build and Deploy to DigitalOcean Droplet
 
-# 1
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push events but only for the main branch
@@ -9,16 +9,13 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Image version"
-        required: true
-#2
+
 env:
   REGISTRY: "registry.digitalocean.com/forbreakfast"
-  IMAGE_NAME: "forbreakfast"
+  FRONTEND_IMAGE_NAME: "frontend"
+  BACKEND_IMAGE_NAME: "backend"
 
-#3
+
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -32,13 +29,13 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+        run: doctl registry login --expiry-seconds 720
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Build and push Frontend
+        run: docker buildx build --push --tag $(echo $REGISTRY)/$(echo $FRONTEND_IMAGE_NAME):latest frontend
 
-      - name: Build and push Docker images
-        run: docker buildx build --push --tag $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest .
+      - name: Build and push Backend
+        run: docker buildx build --push --tag $(echo $REGISTRY)/$(echo $BACKEND_IMAGE_NAME):latest backend
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,23 +48,24 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,{{ secrets.OPENAI_API_KEY }}
+          envs: IMAGE_NAME,REGISTRY, {{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}, {{ secrets.OPENAI_API_KEY }}
           script: |
+            # Login to registry
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password-stdin ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
+            
+            # Pull the latest images
+            docker pull registry.digitalocean.com/forbreakfast/frontend:latest
+            docker pull registry.digitalocean.com/forbreakfast/backend:latest
+
             # Stop and remove all current containers
             docker stop $(docker ps -q) || true
             docker rm $(docker ps -a -q) || true
 
-            # Login to registry
-            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password-stdin ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-            # Pull the latest image
-            docker pull registry.digitalocean.com/forbreakfast/forbreakfast:latest
-
-            # Go into the deployment directory
+            # Go into the directory
             cd forbreakfast
 
             # Get the latest changes
             git pull
 
             # Run new containers from docker-compose
-            docker-compose pull
             docker-compose up -d
