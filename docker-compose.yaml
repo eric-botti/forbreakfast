@@ -33,6 +33,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+#      - ./Caddyfile_local:/etc/caddy/Caddyfile # use this file for local development
       - caddy_data:/data
       - caddy_config:/config
     networks:
