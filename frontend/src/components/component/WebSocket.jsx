@@ -3,9 +3,19 @@ import { useEffect, useRef } from 'react';
 export function useWebSocketChat(playerName) {
   const ws = useRef(null);
 
+
   useEffect(() => {
-    const host = window.location.host; // Get the host from the current window location
-    const url = `wss://${host}/api/ws/${playerName}`;
+    let host;
+
+    if (process.env.NODE_ENV === 'development') {
+      host = "ws://localhost:8000"
+    }
+    else {
+      host = window.location.host; // Get the host from the current window location
+      host = `wss://${host}`
+    }
+
+    const url = `${host}/api/ws/${playerName}`;
 
     // Initialize WebSocket connection
     ws.current = new WebSocket(url);
