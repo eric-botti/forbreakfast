@@ -2,18 +2,41 @@ import {Textarea} from "../ui/textarea";
 import {Button} from "../ui/button";
 import React from "react";
 
+function CalcBasis(num) {
+    // If the number is divisible by 3, return 1/4
+    if (num <= 2 || num === 4) {
+      return "w-1/3";
+    }
+    else {
+        return "w-1/4";
+    }
+}
 
-export default function ChatInput( {handleSendMessage, newMessage, setNewMessage} ) {
+export default function ChatInput( {handleSendMessage, newMessage, setNewMessage, choices} ) {
+
+    const handleButtonClick = (option) => {
+        handleSendMessage(option);
+    }
+
     return (
 <div className="bg-background border-t px-4 py-3">
-    <div className="relative">
+    {choices ? (
+        <div className={`flex flex-wrap justify-center gap-2 w-full items-center`}>
+            {choices.map((option) => (
+              <Button key={option} variant="outline" className={`${CalcBasis(choices.length)} px-4 py-2 text-sm`} onClick={() => handleButtonClick(option)}>
+                {option}
+              </Button>
+            ))}
+        </div>
+        ) : (
+        <div className="relative">
         <Textarea
             placeholder="Type your message..."
             value={newMessage}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                handleSendMessage();
+                handleSendMessage(newMessage);
               }
             }}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -28,7 +51,8 @@ export default function ChatInput( {handleSendMessage, newMessage, setNewMessage
             <SendIcon className="w-4 h-4" />
             <span className="sr-only">Send</span>
         </Button>
-    </div>
+    </div> )
+    }
 </div>
     )
 }

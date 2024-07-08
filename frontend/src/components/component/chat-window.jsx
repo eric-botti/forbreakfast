@@ -17,12 +17,14 @@ export default function ChatWindow({ name }) {
 
   const { sendMessage, onMessageReceived } = useWebSocketChat(name);
 
-  const handleSendMessage = async () => {
-    if (newMessage.trim() !== "") {
+  const choices = null
+
+  const handleSendMessage = async (message) => {
+    if (message.trim() !== "") {
       const newMessageObj = {
         id: messages.length + 1,
         sender: "You",
-        content: newMessage,
+        content: message,
       };
 
       sendMessage(newMessageObj);
@@ -57,7 +59,7 @@ export default function ChatWindow({ name }) {
         </div>
       </ScrollArea>
     </div>
-  <ChatInput handleSendMessage={handleSendMessage} newMessage={newMessage} setNewMessage={setNewMessage} />
+  <ChatInput handleSendMessage={handleSendMessage} newMessage={newMessage} setNewMessage={setNewMessage} choices={choices} />
   </div>
 </div>
 
