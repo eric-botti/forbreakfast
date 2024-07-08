@@ -351,7 +351,7 @@ class ChameleonGame(Game):
             voted_for = self.player_from_id(vote["voted_for_id"])
 
             # If a Herd player votes for the Chameleon       =   +1 Point to that player
-            if voted_for == self.chameleon.player_id:
+            if voted_for.id == self.chameleon.player_id:
                 voter.points += 1
 
             await self.game_message(f"*Voted for {voted_for.name}*", sender=voter.name, exclude=True, recipient=voter)
