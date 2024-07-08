@@ -44,16 +44,12 @@ Your Response:"""
 
 _chameleon_guess_animal = """\
 What animal do you think the other players are pretending to be?
-Player Responses:
 {player_responses}
-Your Guess:
 """
 
 _vote_prompt = """\
-It's your turn to vote. Choose from the other players who you think the Chameleon is.
-Player Responses:
+As a member of the Herd you will now guess who the Chameleon is. Which of these players do you think is the Chameleon.\n
 {player_responses}
-Your Vote:
 """
 
 prompts = {

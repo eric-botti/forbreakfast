@@ -157,8 +157,8 @@ class ChameleonGame(Game):
                     # Go back to start
                     await self.game_message(
                         f"No player has won yet, the game will end when a player reaches {self.winning_score} points."
+                        f"\n\nStarting a new round..."
                     )
-                    await self.game_message(f"Starting a new round...")
                     random.shuffle(self.players)
                     await self.run_game()
 
@@ -276,9 +276,9 @@ class ChameleonGame(Game):
     async def player_turn_chameleon_guess(self, chameleon: Player):
         """Handles the Chameleon's turn to guess the secret animal."""
         if not self.awaiting_input:
-            await self.game_message(
-                "All players have spoken. The Chameleon will now guess the secret animal..."
-            )
+            # await self.game_message(
+            #     "All players have spoken. The Chameleon will now guess the secret animal..."
+            # )
             await self.verbose_message(
                 "The Chameleon is guessing...", recipient=chameleon, exclude=True
             )
@@ -296,9 +296,9 @@ class ChameleonGame(Game):
 
         if response:
             self.chameleon_guesses.append(response.animal)
-            await self.game_message(
-                "The Chameleon has guessed the animal. Now the Herd will vote on who they think the chameleon is."
-            )
+            # await self.game_message(
+            #     "The Chameleon has guessed the animal. Now the Herd will vote on who they think the chameleon is."
+            # )
             self.awaiting_input = False
             self.game_state = "herd_vote"
         else:
@@ -344,52 +344,50 @@ class ChameleonGame(Game):
 
     async def resolve_round(self):
         """Resolves the round, assigns points, and prints the results."""
-        await self.game_message("All players have voted!")
         for vote in self.herd_vote_tally:
             voter = self.player_from_id(vote["voter_id"])
             voted_for = self.player_from_id(vote["voted_for_id"])
-            await self.game_message(f"{voter.name} voted for {voted_for.name}")
+
+            # If a Herd player votes for the Chameleon       =   +1 Point to that player
+            if voted_for == self.chameleon.player_id:
+                voter.points += 1
+
+            await self.game_message(f"*Voted for {voted_for.name}*", sender=voter.name)
 
         accused_player_id = self.count_chameleon_votes(self.herd_vote_tally)
-
-        await self.game_message(f"The round is over. Calculating results...")
-        await self.game_message(
-            f"The Chameleon was {self.chameleon.name}, and they guessed the secret animal was {self.chameleon_guess}."
-        )
-        await self.game_message(
-            f"The secret animal was actually was {self.herd_animal}."
-        )
+        herd_vote_message = ""
 
         if accused_player_id:
             accused_name = self.player_from_id(accused_player_id).name
-            await self.game_message(
-                f"The Herd voted for {accused_name} as the Chameleon."
-            )
+            herd_vote_message += f"The Herd voted for **{accused_name}** as the Chameleon."
         else:
-            await self.game_message(f"The Herd could not come to a consensus.")
+            herd_vote_message += "The Herd could not come to a consensus."
 
-        # Point Logic
-        # If the Chameleon guesses the correct animal    =   +1 Point to the Chameleon
-        if self.chameleon_guess.lower() == self.herd_animal.lower():
-            self.chameleon.points += 1
-
-        # If the Chameleon guesses the incorrect animal  =   +1 Point to each Herd player
-        else:
-            for player in self.players:
-                if player.role == "herd":
-                    player.points += 1
-        # If a Herd player votes for the Chameleon       =   +1 Point to that player
-        for vote in self.herd_vote_tally:
-            if vote["voted_for_id"] == self.chameleon.player_id:
-                self.player_from_id(vote["voter_id"]).points += 1
+        await self.game_message(herd_vote_message)
 
         # If the Herd fails to accuse the Chameleon      =   +1 Point to the Chameleon
         if not accused_player_id or accused_player_id != self.chameleon.player_id:
             self.chameleon.points += 1
 
+        chameleon_reveal_message = f"The Chameleon was **{self.chameleon.name}**, "
+
+        if self.chameleon_guess.lower() == self.herd_animal.lower():
+            chameleon_reveal_message += f"and they correctly guessed the secret animal as {self.chameleon_guess}."
+            # If the Chameleon guesses the correct animal    =   +1 Point to the Chameleon
+            self.chameleon.points += 1
+        else:
+            chameleon_reveal_message += f"but they incorrectly guessed the secret animal as {self.chameleon_guess}. The secret animal was actually {self.herd_animal}."
+            # If the Chameleon guesses the incorrect animal  =   +1 Point to each Herd player
+            for player in self.players:
+                if player.role == "herd":
+                    player.points += 1
+
+        await self.game_message(chameleon_reveal_message)
+
+
         # Print Scores
         player_points = "\n".join(
-            [f"{player.name}: {player.points}" for player in self.players]
+            [f"- {player.name}: {player.points}" for player in self.players]
         )
         await self.game_message(f"Current Game Score:\n{player_points}")
 
