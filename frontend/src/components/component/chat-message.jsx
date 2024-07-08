@@ -18,7 +18,7 @@ export default function ChatMessage({ message }) {
         message_div = (
             <>
               <div
-                className="rounded-lg p-3 max-w-[70%] border-l-4 border-complementary-accent bg-complementary"
+                className="rounded-lg p-3 md:max-w-[70%] border-l-4 border-complementary-accent bg-complementary"
               >
                 <span className="font-semibold text-sm">{message.sender}</span>
                 <div className="text-base" dangerouslySetInnerHTML={{ __html: message.content }}></div>
@@ -28,9 +28,8 @@ export default function ChatMessage({ message }) {
         break;
     default:
       message_div = (<>
-
               <div
-                className="bg-muted rounded-lg p-3 max-w-[70%] flex gap-2 items-center"
+                className="bg-muted rounded-lg p-3 md:max-w-[70%] flex gap-2 items-center"
               >
                 <Avatar className="w-10 h-10 rounded-lg">
                     <AvatarImage src={`/avatars/${(message.sender)}.png`} />
