@@ -46,7 +46,7 @@ export default function ChatInput( {handleSendMessage, newMessage, setNewMessage
           type="button"
           size="icon"
           className="absolute w-8 h-8 top-3 right-3"
-          onClick={handleSendMessage}
+          onClick={handleSendMessage(newMessage)}
         >
             <SendIcon className="w-4 h-4" />
             <span className="sr-only">Send</span>
