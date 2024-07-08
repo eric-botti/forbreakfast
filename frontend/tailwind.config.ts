@@ -52,6 +52,13 @@ const config: Config = {
             "card": {
               "DEFAULT": "hsl(var(--card))",
               "foreground": "hsl(var(--card-foreground))"
+            },
+            "complementary": {
+                "DEFAULT": "hsl(var(--complementary))",
+                "foreground": "hsl(var(--complementary-foreground))"
+            },
+            "complementary-accent": {
+                "DEFAULT": "hsl(var(--complementary-accent))",
             }
           },
       borderRadius: {

@@ -4,7 +4,7 @@ import random
 # Utilities
 ALPHABET = string.ascii_lowercase + string.digits
 ID_LENGTH = 8
-AVAILABLE_NAMES = ["Aiden", "Bianca", "Charlie", "Dylan", "Eva", "Finn", "Grace", "Henry", "Isabella", "Julian", "Kaitlyn", "Lucas", "Mia", "Nolan", "Oliver", "Penelope", "Quinn", "Riley", "Sophia", "Tessa", "Ulysses", "Violet", "Wyatt", "Xavier", "Yara", "Zoe"]
+AVAILABLE_NAMES = ["Bianca", "Julian", "Penny", "Florence", "Roger", "Joe"]
 
 
 def generate_game_id():

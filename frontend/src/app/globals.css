@@ -24,7 +24,11 @@
     --card: 197 100% 98%;
     --ring: 197 100% 45%;
     --radius: 1rem;
-    --waffle-size: 35rem
+
+    --waffle-size: 35rem;
+    --complementary: 39 88% 73%;
+    --complementary-foreground: 197 100% 95%;
+    --complementary-accent: 35, 90%, 56%;
   }
 }
 
