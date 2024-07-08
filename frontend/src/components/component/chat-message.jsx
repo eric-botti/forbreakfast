@@ -32,7 +32,7 @@ export default function ChatMessage({ message }) {
                 className="bg-muted rounded-lg p-3 md:max-w-[70%] flex gap-2 items-center"
               >
                 <Avatar className="w-10 h-10 rounded-lg">
-                    <AvatarImage src={`/avatars/${(message.sender)}.png`} />
+                    <AvatarImage src={`${(message.sender)}.png`} />
                     <AvatarFallback className="bg-background">{message.sender.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
