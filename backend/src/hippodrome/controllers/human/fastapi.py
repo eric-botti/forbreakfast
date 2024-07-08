@@ -28,7 +28,7 @@ class FastAPIHumanController(BaseHumanController):
             html = html.replace("<ol>", "<ol class='list-decimal list-inside space-y-1'>")
 
             await self.websocket.send_json(
-                {"sender": message.sender, "content": html}
+                {"sender": message.sender, "content": html, "choices": message.choices}
             )
 
     async def _generate(self) -> str:

@@ -23,7 +23,7 @@ export default function ChatInput( {handleSendMessage, newMessage, setNewMessage
     {choices ? (
         <div className={`flex flex-wrap justify-center gap-2 w-full items-center`}>
             {choices.map((option) => (
-              <Button key={option} variant="outline" className={`${CalcBasis(choices.length)} px-4 py-2 text-sm`} onClick={() => handleButtonClick(option)}>
+              <Button key={option} variant={"outline"} className={`${CalcBasis(choices.length)} px-4 py-2 text-sm`} onClick={() => handleButtonClick(option)}>
                 {option}
               </Button>
             ))}

@@ -307,15 +307,17 @@ class ChameleonGame(Game):
 
     async def player_turn_herd_vote(self, player: Player):
         """Handles a player's turn to vote for the Chameleon."""
+        other_players = [p.name for p in self.players if p != player]
+
         if not self.awaiting_input:
             player_responses = self.format_animal_descriptions(exclude=player)
             await self.game_message(
-                format_prompt("vote", player_responses=player_responses), player
+                format_prompt("vote", player_responses=player_responses), player, choices=other_players
             )
 
         # Get Player Vote
         additional_fields = {
-            "player_names": [p.name for p in self.players if p != player]
+            "player_names": other_players
         }
         response = await player.controller.generate_formatted_response(
             HerdVoteFormat, additional_fields=additional_fields
@@ -352,7 +354,7 @@ class ChameleonGame(Game):
             if voted_for == self.chameleon.player_id:
                 voter.points += 1
 
-            await self.game_message(f"*Voted for {voted_for.name}*", sender=voter.name)
+            await self.game_message(f"*Voted for {voted_for.name}*", sender=voter.name, exclude=True, recipient=voter)
 
         accused_player_id = self.count_chameleon_votes(self.herd_vote_tally)
         herd_vote_message = ""

@@ -72,6 +72,7 @@ class Game(BaseModel):
         exclude: bool = False,  # If True, the message is broadcast to all players except the chosen player
         message_type: MessageType = "info",
         sender: str = "Game Master",
+        choices: Optional[List[str]] = None,
     ):
         """
         Sends a message to a player or all players.
@@ -90,7 +91,7 @@ class Game(BaseModel):
             else:
                 recipients = recipient
 
-        message = Message(sender=sender, type=message_type, content=content)
+        message = Message(sender=sender, type=message_type, content=content, choices=choices)
         recipient_ids = []
 
         for player in recipients:

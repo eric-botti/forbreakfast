@@ -17,8 +17,6 @@ export default function ChatWindow({ name }) {
 
   const { sendMessage, onMessageReceived } = useWebSocketChat(name);
 
-  const choices = null
-
   const handleSendMessage = async (message) => {
     if (message.trim() !== "") {
       const newMessageObj = {
@@ -40,6 +38,18 @@ export default function ChatWindow({ name }) {
       setMessages(messages => [...messages, newBotMessageObj]);
     });
   }, []);
+
+  var choices;
+
+  if (messages.length > 0) {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.sender === "Game Master") {
+      choices = lastMessage.choices;
+    }
+  }
+  else {
+    choices = [];
+  }
 
 
   return (

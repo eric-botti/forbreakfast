@@ -1,4 +1,4 @@
-from typing import Literal, List
+from typing import Literal, List, Optional
 from pydantic import BaseModel, computed_field, Field
 
 MessageType = Literal["prompt", "info", "agent", "retry", "error", "format", "verbose", "debug", "system"]
@@ -23,7 +23,9 @@ class Message(BaseModel):
     content: str
     """The content of the message."""
     recipients: List[str] = Field(default_factory=list)
-    """The id/ids of the players that the message was sent by/to."""
+    """The id/ids of the players that the message was sent to."""
+    choices: Optional[List[str]] = None
+    """The choices that the player can make in response to the message."""
 
     @property
     def conversation_role(self) -> str:
