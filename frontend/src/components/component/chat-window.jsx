@@ -18,6 +18,10 @@ export default function ChatWindow({ name }) {
   const { sendMessage, onMessageReceived } = useWebSocketChat(name);
 
   const handleSendMessage = async (message) => {
+    if (message === undefined) {
+        message = newMessage
+    }
+
     if (message.trim() !== "") {
       const newMessageObj = {
         id: messages.length + 1,

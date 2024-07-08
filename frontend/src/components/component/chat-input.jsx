@@ -14,16 +14,17 @@ function CalcBasis(num) {
 
 export default function ChatInput( {handleSendMessage, newMessage, setNewMessage, choices} ) {
 
-    const handleButtonClick = (option) => {
-        handleSendMessage(option);
-    }
-
     return (
 <div className="bg-background border-t px-4 py-3">
     {choices ? (
         <div className={`flex flex-wrap justify-center gap-2 w-full items-center`}>
             {choices.map((option) => (
-              <Button key={option} variant={"outline"} className={`${CalcBasis(choices.length)} px-4 py-2 text-sm`} onClick={() => handleButtonClick(option)}>
+              <Button
+                  key={option}
+                  variant={"outline"}
+                  className={`${CalcBasis(choices.length)} px-4 py-2 text-sm`}
+                  onClick={() => handleSendMessage(option)}
+              >
                 {option}
               </Button>
             ))}
@@ -46,7 +47,7 @@ export default function ChatInput( {handleSendMessage, newMessage, setNewMessage
           type="button"
           size="icon"
           className="absolute w-8 h-8 top-3 right-3"
-          onClick={handleSendMessage(newMessage)}
+          onClick={() => handleSendMessage(newMessage)}
         >
             <SendIcon className="w-4 h-4" />
             <span className="sr-only">Send</span>
