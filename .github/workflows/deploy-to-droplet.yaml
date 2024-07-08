@@ -91,6 +91,9 @@ jobs:
             # Go into the directory
             cd forbreakfast
             
+            # Clean up Old Containers
+            docker container prune -f
+            
             # Login to Registry Using doctl
             doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             doctl registry login --expiry-seconds 720
@@ -112,6 +115,3 @@ jobs:
             
             # Clean Up .env
             rm .env
-            
-            # Clean up Old Containers
-            docker container prune
