@@ -1,0 +1,1 @@
+from boss_fight.game import BossFight
