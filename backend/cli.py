@@ -1,7 +1,14 @@
+from dotenv import load_dotenv
+
+load_dotenv("local.env")
+
+
 import asyncio
+import os
 
 from hippodrome.controllers.human.cli import HumanCLIController
 from boss_fight.game import BossFight, BossFightPlayer, ActionFormat
+
 
 
 def main():

@@ -31,15 +31,14 @@ class BossFight(Game):
                 ActionFormat
             )
 
-
             if response.action == "attack":
-                await self.game_message(f"{player} attacks the boss!")
+                await self.game_message(f"{player.name} attacks the boss!")
 
             elif response.action == "heal":
-                await self.game_message(f"{player} heals themselves!")
+                await self.game_message(f"{player.name} heals themselves!")
 
             elif response.action == "flee":
-                await self.game_message(f"{player} flees the boss fight!")
+                await self.game_message(f"{player.name} flees the boss fight!")
 
 
 

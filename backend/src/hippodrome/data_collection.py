@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import NewType
 
@@ -7,8 +8,10 @@ from pymongo import MongoClient
 from pydantic import BaseModel
 
 
-DO_DATA_COLLECTION = bool(int(os.environ.get("DO_DATA_COLLECTION", 0)))
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+DO_DATA_COLLECTION = bool(int(os.environ.get("DO_DATA_COLLECTION", 0)))
 JSONL_DATA_DIR = os.environ.get("JSONL_DATA_DIR")
 
 MONGODB_CONNECTION_STRING = os.environ.get("MONGODB_CONNECTION_STRING")
@@ -16,13 +19,11 @@ DB_NAME = os.environ.get("MONGODB_NAME")
 
 Model = NewType("Model", BaseModel)
 
-DO_DATA_COLLECTION = False
-JSONL_DATA_DIR = r"/data"
-
 
 def save(log_object: Model):
     # If data collection is disabled, return early
     if not DO_DATA_COLLECTION:
+        logger.info("Not Collecting Data")
         return
 
     collection = get_collection(log_object)
@@ -31,6 +32,7 @@ def save(log_object: Model):
 
     # JSONL mode, saves data to a local JSONL file
     if JSONL_DATA_DIR:
+        logger.info(f"Saving to JSONL file: {collection}.jsonl in {JSONL_DATA_DIR}")
         data_dir = JSONL_DATA_DIR
         log_file = os.path.join(data_dir, f"{collection}.jsonl")
 
