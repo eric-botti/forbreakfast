@@ -8,7 +8,7 @@ from pymongo import MongoClient
 from pydantic import BaseModel
 
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DO_DATA_COLLECTION = bool(int(os.environ.get("DO_DATA_COLLECTION", 0)))
