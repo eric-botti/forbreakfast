@@ -312,13 +312,13 @@ class ChameleonGame(Game):
         if not self.awaiting_input:
             player_responses = self.format_animal_descriptions(exclude=player)
             await self.game_message(
-                format_prompt("vote", player_responses=player_responses), player, choices=other_players
+                format_prompt("vote", player_responses=player_responses),
+                player,
+                choices=other_players,
             )
 
         # Get Player Vote
-        additional_fields = {
-            "player_names": other_players
-        }
+        additional_fields = {"player_names": other_players}
         response = await player.controller.generate_formatted_response(
             HerdVoteFormat, additional_fields=additional_fields
         )
@@ -354,14 +354,21 @@ class ChameleonGame(Game):
             if voted_for.id == self.chameleon.player_id:
                 voter.points += 1
 
-            await self.game_message(f"*Voted for {voted_for.name}*", sender=voter.name, exclude=True, recipient=voter)
+            await self.game_message(
+                f"*Voted for {voted_for.name}*",
+                sender=voter.name,
+                exclude=True,
+                recipient=voter,
+            )
 
         accused_player_id = self.count_chameleon_votes(self.herd_vote_tally)
         herd_vote_message = ""
 
         if accused_player_id:
             accused_name = self.player_from_id(accused_player_id).name
-            herd_vote_message += f"The Herd voted for **{accused_name}** as the Chameleon."
+            herd_vote_message += (
+                f"The Herd voted for **{accused_name}** as the Chameleon."
+            )
         else:
             herd_vote_message += "The Herd could not come to a consensus."
 
@@ -385,7 +392,6 @@ class ChameleonGame(Game):
                     player.points += 1
 
         await self.game_message(chameleon_reveal_message)
-
 
         # Print Scores
         player_points = "\n".join(

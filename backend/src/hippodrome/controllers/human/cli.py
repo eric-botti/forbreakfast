@@ -4,8 +4,37 @@ from colorama import Fore, Style
 from hippodrome.message import Message
 
 
+def multiple_choice(choices):
+    """
+    Displays a multiple choice question and returns the user's choice.
+
+    :param choices: list of str - The possible answers to choose from
+    :return: str - The user's chosen answer
+    """
+    # Print the choices with corresponding numbers
+    for idx, choice in enumerate(choices, start=1):
+        print(f"{idx}. {choice}")
+
+    # Get the user's choice
+    while True:
+        try:
+            # Ask the user to choose a number
+            user_input = input("Enter the number of your choice: ")
+            # Convert the input to an integer
+            user_choice = int(user_input)
+            # Check if the choice is within the valid range
+            if 1 <= user_choice <= len(choices):
+                # Return the chosen option
+                return choices[user_choice - 1]
+            else:
+                print("Invalid choice. Please enter a number from the list.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+
 class HumanCLIController(BaseHumanController):
     """A Human agent that uses the command line interface to generate responses."""
+
     async def add_message(self, message: Message):
         await super().add_message(message)
         if message.type == "verbose":
@@ -18,5 +47,11 @@ class HumanCLIController(BaseHumanController):
 
     async def _generate(self) -> str:
         """Generates a response using the message history"""
-        response = input()
+        last_message = self.messages[-1]
+
+        if last_message.choices:
+            response = multiple_choice(last_message.choices)
+        else:
+            response = input()
+
         return response
