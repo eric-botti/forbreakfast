@@ -2,31 +2,26 @@
     "ingredients": [
       {
         "id": 1,
-        "name": "Mandrake Root",
+        "name": "Ironwood Bark",
         "cost": 4
       },
       {
         "id": 2,
-        "name": "Dragon Scale",
-        "cost": 4
-      },
-      {
-        "id": 3,
-        "name": "Phoenix Feather",
-        "cost": 4
-      },
-      {
-        "id": 4,
-        "name": "Moonstone",
-        "cost": 3
-      },
-      {
-        "id": 5,
         "name": "Mermaid Tear",
         "cost": 4
       },
       {
-        "id": 6,
+        "id": 3,
+        "name": "Aether Crystal",
+        "cost": 4
+      },
+      {
+        "id": 4,
+        "name": "Phoenix Ashes",
+        "cost": 3
+      },
+      {
+        "id": 5,
         "name": "Fairy Dust",
         "cost": 5
       }

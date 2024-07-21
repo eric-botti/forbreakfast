@@ -1,7 +1,9 @@
 from typing import Literal, List, Optional
 from pydantic import BaseModel, computed_field, Field
 
-MessageType = Literal["prompt", "info", "agent", "retry", "error", "format", "verbose", "debug", "system"]
+MessageType = Literal[
+    "prompt", "info", "agent", "retry", "error", "format", "verbose", "debug", "system"
+]
 
 message_number = 0
 
@@ -26,6 +28,8 @@ class Message(BaseModel):
     """The id/ids of the players that the message was sent to."""
     choices: Optional[List[str]] = None
     """The choices that the player can make in response to the message."""
+    choice_idx: Optional[int] = None
+    """The index of the choice that the player made in response to a multiple choice message."""
 
     @property
     def conversation_role(self) -> str:
@@ -67,12 +71,14 @@ class AgentMessage(Message):
         return f"{self.game_id}-{self.message_number}"
 
     @classmethod
-    def from_message(cls, message: Message, recipients: List[str], game_id: str) -> "AgentMessage":
+    def from_message(
+        cls, message: Message, recipients: List[str], game_id: str
+    ) -> "AgentMessage":
         """Creates an AgentMessage from a Message."""
         return cls(
             sender=message.sender,
             type=message.type,
             content=message.content,
             recipients=recipients,
-            game_id=game_id
+            game_id=game_id,
         )

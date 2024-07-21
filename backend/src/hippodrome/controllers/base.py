@@ -45,23 +45,31 @@ class BaseController(BaseModel):
         return response
 
     async def respond_to_formatted(
-            self, message: Message,
-            output_format: Type[OutputFormatModel],
-            additional_fields: dict = None,
-            **kwargs
+        self,
+        message: Message,
+        output_format: Type[OutputFormatModel],
+        additional_fields: dict = None,
+        **kwargs,
     ) -> OutputFormatModel:
         """Responds to a message and logs the response."""
         await self.add_message(message)
-        output = await self.generate_formatted_response(output_format, additional_fields, **kwargs)
+        output = await self.generate_formatted_response(
+            output_format, additional_fields, **kwargs
+        )
         return output
 
     # Generate response methods - These do not take a message as input and only use the current message history
 
     async def generate_response(self) -> Message | None:
         """Generates a response based on the current messages in the history."""
-        content = await self._generate()
+        content, choice_idx = await self._generate()
         if content:
-            response = Message(sender=self.agent_id, type="agent", content=content)
+            response = Message(
+                sender=self.agent_id,
+                type="agent",
+                content=content,
+                choice_idx=choice_idx,
+            )
             await self.add_message(response)
             save(AgentMessage.from_message(response, [self.agent_id], self.game_id))
             return response
@@ -69,15 +77,17 @@ class BaseController(BaseModel):
             return None
 
     async def generate_formatted_response(
-            self,
-            output_format: Type[OutputFormatModel],
-            additional_fields: dict = None,
-            max_retries=3,
+        self,
+        output_format: Type[OutputFormatModel],
+        additional_fields: dict = None,
+        max_retries=3,
     ) -> OutputFormatModel:
         """Generates a response matching the provided format."""
         initial_response = await self.generate_response()
 
-        reformat_message = Message(type="format", content=output_format.get_format_instructions())
+        reformat_message = Message(
+            type="format", content=output_format.get_format_instructions()
+        )
 
         output = None
         retries = 0
@@ -97,7 +107,10 @@ class BaseController(BaseModel):
                 if retries > max_retries:
                     raise e
 
-                retry_message = Message(type="retry", content=f"Error formatting response: {e} \n\n Please try again.")
+                retry_message = Message(
+                    type="retry",
+                    content=f"Error formatting response: {e} \n\n Please try again.",
+                )
                 reformat_message = retry_message
 
                 retries += 1
@@ -107,10 +120,12 @@ class BaseController(BaseModel):
                 if retries > max_retries:
                     raise e
 
-                retry_message = Message(type="retry",
-                                        content="There was an Error with your JSON format. Make sure you are not using code blocks."
-                                                "i.e. your response should be:\n{...}\n"
-                                                "Instead of:\n```json\n{...}\n```\n\n Please try again.")
+                retry_message = Message(
+                    type="retry",
+                    content="There was an Error with your JSON format. Make sure you are not using code blocks."
+                    "i.e. your response should be:\n{...}\n"
+                    "Instead of:\n```json\n{...}\n```\n\n Please try again.",
+                )
                 reformat_message = retry_message
 
                 retries += 1
@@ -122,4 +137,3 @@ class BaseController(BaseModel):
         # This is the BaseAgent class, and thus has no response logic
         # Subclasses should implement this method to generate a response using the message history
         raise NotImplementedError
-

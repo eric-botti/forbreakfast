@@ -1,4 +1,5 @@
 import random
+from typing import List
 from pydantic import BaseModel
 
 
@@ -11,22 +12,20 @@ class Ingredient(BaseModel):
     cost: int
 
 
-class RecipeItem(BaseModel):
-    """A recipe for a potion that can be brewed."""
-
-    ingredient_id: int
-    """The ID of the ingredient required for the recipe."""
-    quantity: int
-    """The quantity of the ingredient required for the recipe."""
-
-
 class Potion(BaseModel):
     """A potion that can be brewed and sold as part of an order."""
 
     id: int
     name: str
-    ingredients: list[RecipeItem]
-    value: int
+    ingredients: List[int]
+    value: int = 5
+
+    def can_brew(self, ingredient_pouch: List[int]):
+        """Check if the player can brew this potion."""
+        ingredients = set(self.ingredients)
+        pouch = set(ingredient_pouch)
+
+        return ingredients.issubset(pouch)
 
 
 class Order(BaseModel):
@@ -36,6 +35,13 @@ class Order(BaseModel):
     """A list of potion IDs in the order."""
     value: int
     """How many gold coins the order is worth."""
+
+    def can_fufill(self, player_potions: List[int]):
+        """Check if the player can fulfill this order."""
+        order_potions = set(self.potions)
+        player_potions = set(player_potions)
+
+        return order_potions.issubset(player_potions)
 
 
 import json
@@ -49,12 +55,11 @@ potions_path = os.path.join(item_data_path, "potions.json")
 
 with open(ingredients_path) as f:
     ingredients = json.load(f)["ingredients"]
-
     ingredients = [Ingredient(**ingredient) for ingredient in ingredients]
+
 
 with open(potions_path) as f:
     potions = json.load(f)["potions"]
-
     all_potions = [Potion(**potion) for potion in potions]
 
 

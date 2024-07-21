@@ -4,7 +4,7 @@ from colorama import Fore, Style
 from hippodrome.message import Message
 
 
-def multiple_choice(choices):
+def multiple_choice(choices) -> tuple[str, int]:
     """
     Displays a multiple choice question and returns the user's choice.
 
@@ -25,7 +25,9 @@ def multiple_choice(choices):
             # Check if the choice is within the valid range
             if 1 <= user_choice <= len(choices):
                 # Return the chosen option
-                return choices[user_choice - 1]
+                choice_idx = user_choice - 1
+
+                return choices[choice_idx], choice_idx
             else:
                 print("Invalid choice. Please enter a number from the list.")
         except ValueError:
@@ -50,8 +52,9 @@ class HumanCLIController(BaseHumanController):
         last_message = self.messages[-1]
 
         if last_message.choices:
-            response = multiple_choice(last_message.choices)
+            response, choice_idx = multiple_choice(last_message.choices)
         else:
             response = input()
+            choice_idx = None
 
-        return response
+        return response, choice_idx
