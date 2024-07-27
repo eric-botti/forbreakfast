@@ -62,7 +62,7 @@ class BaseController(BaseModel):
 
     async def generate_response(self) -> Message | None:
         """Generates a response based on the current messages in the history."""
-        content, choice_idx = await self._generate()
+        content = await self._generate()
         if content:
             response = Message(
                 sender=self.agent_id,
