@@ -68,7 +68,7 @@ class BaseController(BaseModel):
                 sender=self.agent_id,
                 type="agent",
                 content=content,
-                choice_idx=choice_idx,
+                # choice_idx=choice_idx,
             )
             await self.add_message(response)
             save(AgentMessage.from_message(response, [self.agent_id], self.game_id))
