@@ -1,6 +1,9 @@
-import random
+import json
+import os
+
 from typing import List
 from pydantic import BaseModel
+
 
 
 class Ingredient(BaseModel):
@@ -16,9 +19,14 @@ class Potion(BaseModel):
     """A potion that can be brewed and sold as part of an order."""
 
     id: int
-    name: str
+    effect: str
     ingredients: List[int]
     value: int = 5
+
+    @property
+    def name(self):
+        """Get the name of the potion."""
+        return "potion of " + self.effect
 
     def can_brew(self, ingredient_pouch: List[int]):
         """Check if the player can brew this potion."""
@@ -27,25 +35,6 @@ class Potion(BaseModel):
 
         return ingredients.issubset(pouch)
 
-
-class Order(BaseModel):
-    """An order for a group of potions that can be fulfilled."""
-
-    potions: list[int]
-    """A list of potion IDs in the order."""
-    value: int
-    """How many gold coins the order is worth."""
-
-    def can_fufill(self, player_potions: List[int]):
-        """Check if the player can fulfill this order."""
-        order_potions = set(self.potions)
-        player_potions = set(player_potions)
-
-        return order_potions.issubset(player_potions)
-
-
-import json
-import os
 
 # Get the path of the items
 item_data_path = os.path.join(os.path.dirname(__file__), "items")
@@ -63,30 +52,11 @@ with open(potions_path) as f:
     all_potions = [Potion(**potion) for potion in potions]
 
 
-def random_order():
-    """Create a random order for a player."""
-    potions = []
-    order_size = random.randint(2, 3)
-    value = 0
-
-    for i in range(order_size):
-        potion = random.choice(all_potions)
-        potions.append(potion.id)
-        value += potion.value
-
-    # Increase the value of the order, larger orders are worth more
-    value = int(value * (1 + (0.25 * order_size)) + 0.5)
-
-    order = Order(potions=potions, value=value)
-
-    return order
-
-
-def potion_name_from_id(potion_id: int):
+def potion_from_id(potion_id: int):
     """Get the name of a potion from its ID."""
     potion = next(potion for potion in all_potions if potion.id == potion_id)
 
-    return potion.name
+    return potion
 
 
 def ingredient_name_from_id(ingredient_id: int):

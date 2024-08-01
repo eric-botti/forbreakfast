@@ -2,32 +2,32 @@
   "potions": [
     {
       "id": 1,
-      "name": "Potion of Vitality",
+      "effect": "vitality",
       "ingredients": [1, 2]
     },
     {
       "id": 2,
-      "name": "Potion of Levitation",
+      "effect": "levitation",
       "ingredients": [1, 3]
     },
     {
       "id": 3,
-      "name": "Potion of Strength",
+      "effect": "strength",
       "ingredients": [1, 4]
     },
     {
       "id": 4,
-      "name": "Potion of Water Breathing",
+      "effect": "water breathing",
       "ingredients": [2, 3]
     },
     {
       "id": 5,
-      "name": "Potion of Fire Resistance",
+      "effect": "fire resistance",
       "ingredients": [2, 4]
     },
     {
       "id": 6,
-      "name": "Potion of Quickness",
+      "effect": "quickness",
       "ingredients": [3, 4]
     }
   ]

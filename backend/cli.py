@@ -7,9 +7,9 @@ import asyncio
 import os
 
 from hippodrome.controllers.human.cli import HumanCLIController
-from games.potions.game import PotionPeddlers as Game
+# from games.potions.game import PotionPeddlers as Game
 
-# from chameleon.chameleon_game import ChameleonGame as Game
+from chameleon.chameleon_game import ChameleonGame as Game
 
 
 def main():

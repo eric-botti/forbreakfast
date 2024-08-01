@@ -4,7 +4,8 @@ from pydantic import Field
 
 from hippodrome import PlayerSubclass
 
-from games.potions.items import Order, all_potions
+from games.potions.items import all_potions
+from games.potions.orders import Order
 
 
 class PotionPeddlersPlayer(PlayerSubclass):

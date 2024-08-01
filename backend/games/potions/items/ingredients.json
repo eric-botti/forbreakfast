@@ -2,28 +2,23 @@
     "ingredients": [
       {
         "id": 1,
-        "name": "Ironwood Bark",
-        "cost": 4
+        "name": "Ironwood Root",
+        "cost": 1
       },
       {
         "id": 2,
-        "name": "Mermaid Tear",
-        "cost": 4
+        "name": "Mana Pearl",
+        "cost": 1
       },
       {
         "id": 3,
-        "name": "Aether Crystal",
-        "cost": 4
+        "name": "Aether Droplet",
+        "cost": 1
       },
       {
         "id": 4,
-        "name": "Phoenix Ashes",
-        "cost": 3
-      },
-      {
-        "id": 5,
-        "name": "Fairy Dust",
-        "cost": 5
+        "name": "Phoenix Flower",
+        "cost": 1
       }
     ]
 }

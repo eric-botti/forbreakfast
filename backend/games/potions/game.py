@@ -5,11 +5,12 @@ from pydantic import Field
 
 from games.potions.items import (
     Ingredient,
-    random_order,
-    potion_name_from_id,
+    potion_from_id,
     starting_ingredients,
     ingredient_name_from_id,
 )
+from games.potions.orders import random_order, pretty_print_orders, pretty_print_order
+
 from games.potions.player import PotionPeddlersPlayer
 
 STARTING_ORDER_COUNT = 3
@@ -36,20 +37,8 @@ class PotionPeddlers(Game):
         for player in self.players:
             player.orders = self.get_random_orders()
 
-            player_orders = []
-            for order in player.orders:
-                potion_names = [
-                    potion_name_from_id(potion_id) for potion_id in order.potions
-                ]
-
-                player_orders.append(
-                    f"Order: {', '.join(potion_names)} for {order.value} gold"
-                )
-
-            player_order_str = "\n".join(player_orders)
-
             await self.game_message(
-                f"{player.name}, you have the following orders to fulfill:\n{player_order_str}",
+                pretty_print_orders(player.orders, include_ingredients=True),
                 recipient=player,
             )
 
@@ -58,11 +47,16 @@ class PotionPeddlers(Game):
         self.market = random.sample(self.ingredient_deck, 5)
 
     async def run_game(self):
-        await self.game_setup()
-
         await self.game_message(
             "Welcome to Potion Peddlers! The game will begin shortly."
+            "The Game is simple, you will be given a list of orders to fulfill, each order requires a set of potions to be fulfilled."
+            "You will get ingredients from the market to brew potions, and then sell them to fulfill orders."
+            "The player with the most gold at the end of the game wins."
         )
+
+        await self.game_setup()
+
+
 
         for player in self.players:
             await self.player_turn(player)
@@ -71,17 +65,15 @@ class PotionPeddlers(Game):
             await self.player_turn(player)
 
     async def player_turn(self, player):
-        await self.game_message(f"It's your turn")
-
-        # Phase 1: Buy ingredients
+        # Phase 1: Gather ingredients
         # Buy ingredients from the market
         await self.game_message(
-            f"{player.name}, you have {player.gold} gold. You can buy ingredients to brew potions."
+            f"{player.name}, you may grab an ingredient from the market."
         )
 
         # Show the player the market
         market_contents = [
-            f"{ingredient.name} - {ingredient.cost} gold" for ingredient in self.market
+            ingredient.name for ingredient in self.market
         ]
 
         # Ask the player to buy ingredients
@@ -96,51 +88,17 @@ class PotionPeddlers(Game):
 
         chosen_ingredient = self.market[player_choice.choice_idx]
 
-        # Check if the player has enough gold to buy the ingredient
-        if chosen_ingredient.cost > player.gold:
-            await self.game_message(
-                f"You don't have enough gold to buy {chosen_ingredient.name}.",
-                recipient=player,
-            )
-            return
-        else:
-            # Deduct the cost of the ingredient from the player's gold
-            player.gold -= chosen_ingredient.cost
+        # Add the ingredient to the player's inventory
+        player.ingredient_pouch.append(chosen_ingredient)
 
-            # Add the ingredient to the player's inventory
-            player.ingredient_pouch.append(chosen_ingredient)
-
-            # Remove the ingredient from the market
-            del self.market[player_choice.choice_idx]
+        # Remove the ingredient from the market
+        del self.market[player_choice.choice_idx]
 
         await self.game_message(
             f"You bought {chosen_ingredient.name} for {chosen_ingredient.cost} gold.\n"
             f"You now have {player.gold} gold.",
             recipient=player,
         )
-
-        # Phase 2: Brew potions
-        # Use the ingredients you have to brew potions
-        if player.brewable_potions:
-            choices = [
-                potion_name_from_id(potion_id) for potion_id in player.brewable_potions
-            ]
-            choices += ["Skip brewing"]
-
-            await self.game_message(
-                f"{player.name}, you can now brew potions with the ingredients you have.\n",
-                recipient=player,
-                choices=choices,
-            )
-
-            # Get the player's choice
-            player_choice = await player.controller.generate_response()
-
-        else:
-            await self.game_message(
-                f"{player.name}, you don't have enough ingredients to brew any potions.",
-                recipient=player,
-            )
 
         # Restock the market
         while len(self.market) < 5 and self.ingredient_deck:
@@ -150,40 +108,37 @@ class PotionPeddlers(Game):
             else:
                 break
 
-        # Phase 3: Fulfill orders
+        # Phase 2: Brew and Fulfill orders
         # Check if the player can fulfill any orders
         if player.orders:
-            order_strs = []
-            for order in player.orders:
-                potion_names = [
-                    potion_name_from_id(potion_id) for potion_id in order.potions
-                ]
+            await self.game_message(
+                f"You are working on the following orders: \n{pretty_print_orders(player.orders)}\n"
+                "Once you have the required ingredients, you can fulfill them.",
+                recipient=player,
+            )
 
-                order_strs.append(
-                    f"Order: {', '.join(potion_names)} for {order.value} gold"
+            choices = []
+
+            for order in player.orders:
+                if order.can_fufill(player.brewable_potions):
+                    choices.append(f"Fulfill Order: {pretty_print_order(order)}")
+
+            if choices:
+                choices += ["Skip fulfilling orders"]
+                await self.game_message(
+                    "You can fulfill one of the following orders, or wait",
+                    recipient=player,
+                    choices=choices,
                 )
 
-            await self.game_message(
-                f"{player.name}, you have the following orders to fulfill:\n{'\n'.join(order_strs)}",
-                recipient=player,
-            )
+            if not choices:
+                await self.game_message(
+                    f"{player.name}, you don't have the potions to fulfill any of those orders.",
+                    recipient=player,
+                )
+                return
 
-            await self.game_message(
-                f"{player.name}, you can now fulfill orders.",
-                recipient=player,
-            )
 
-            choices = [
-                f"Fulfill Order: {', '.join([potion_name_from_id(potion_id) for potion_id in order.potions])} for {order.value} gold"
-                for order in player.orders
-            ]
-            choices += ["Skip fulfilling orders"]
-
-            await self.game_message(
-                "What would you like to do?",
-                recipient=player,
-                choices=choices,
-            )
 
             # Get the player's choice
             player_choice = await player.controller.generate_response()
@@ -211,7 +166,6 @@ class PotionPeddlers(Game):
                 recipient=player,
             )
 
-        
 
 
     def get_random_orders(self):
@@ -222,4 +176,5 @@ class PotionPeddlers(Game):
             orders.append(random_order())
 
         return orders
-    
+
+
