@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import ChatMessage from "@/components/component/chat-message";
 import ChatInput from "@/components/component/chat-input";
 import HowToPlay from "@/components/component/how-to-play";
+import LoadingAnimation from "@/components/component/loading";
 import { useWebSocketChat} from "@/components/component/WebSocket";
 
 export default function ChatWindow({ name }) {
@@ -66,11 +67,17 @@ export default function ChatWindow({ name }) {
 
     <div className="flex-1 overflow-auto p-4">
       <ScrollArea className="h-full px-5">
+      {messages.length > 0 ? (
         <div className="grid gap-4">
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
         </div>
+      ) : (
+        <div className="flex items-center justify-center h-full">
+          <LoadingAnimation/>
+        </div>
+      )}
       </ScrollArea>
     </div>
   <ChatInput handleSendMessage={handleSendMessage} newMessage={newMessage} setNewMessage={setNewMessage} choices={choices} />
