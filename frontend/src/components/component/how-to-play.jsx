@@ -13,7 +13,7 @@ import React, {useEffect, useState} from "react";
 
 
 export default function HowToPlay() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleEnterPress = (event) => {
